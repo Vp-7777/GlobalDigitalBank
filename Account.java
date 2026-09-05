@@ -58,14 +58,26 @@ public class Account {
 
         // Check if amount is positive
         if (amount <= 0) {
-            throw new InvalidAmountException("Deposit amount must be greater than 0. Provided: ₹" + amount);
+            throw new InvalidAmountException("Invalid amount");
         }
 
         // Add amount to balance
         this.balance += amount;
     }
 
-    // Withdraws money with PIN verification and validation checks
+    // Overloaded withdraw without PIN (for accounts where PIN has not been set)
+    public void withdraw(double amount) throws InvalidAmountException, 
+                                               InsufficientBalanceException, 
+                                               MinimumBalanceViolationException, 
+                                               InactiveAccountException, 
+                                               InvalidPinException {
+        if (hasPin()) {
+            throw new InvalidPinException("PIN is set. PIN required for withdrawal.");
+        }
+        performWithdrawal(amount);
+    }
+
+    // Withdraws money with PIN verification
     public void withdraw(double amount, int pin) throws InvalidAmountException, 
                                                         InsufficientBalanceException, 
                                                         MinimumBalanceViolationException, 
@@ -76,32 +88,37 @@ public class Account {
 
         // 2. Check if PIN is set
         if (!hasPin()) {
-            throw new InvalidPinException("PIN has not been set for this account.");
+            throw new InvalidPinException("PIN not set");
         }
 
         // 3. Verify PIN
         if (!verifyPin(pin)) {
-            throw new InvalidPinException("Incorrect PIN provided.");
+            throw new InvalidPinException("Incorrect PIN");
         }
 
-        // 4. Check if amount is positive
+        performWithdrawal(amount);
+    }
+
+    // Common withdrawal execution helper
+    private void performWithdrawal(double amount) throws InvalidAmountException,
+                                                         InsufficientBalanceException,
+                                                         MinimumBalanceViolationException,
+                                                         InactiveAccountException {
+        validateActive();
+
         if (amount <= 0) {
-            throw new InvalidAmountException("Withdrawal amount must be greater than 0. Provided: ₹" + amount);
+            throw new InvalidAmountException("Invalid amount");
         }
 
-        // 5. Check if sufficient balance
         if (amount > this.balance) {
-            throw new InsufficientBalanceException("Insufficient balance. Available: ₹" + this.balance + ", Requested: ₹" + amount);
+            throw new InsufficientBalanceException("Insufficient balance");
         }
 
-        // 6. Check minimum balance after withdrawal
         double minBalance = getMinimumBalance();
         if (this.balance - amount < minBalance) {
-            throw new MinimumBalanceViolationException("Withdrawal of ₹" + amount + " would leave balance ₹" 
-                    + (this.balance - amount) + ", violating minimum balance of ₹" + minBalance);
+            throw new MinimumBalanceViolationException("Minimum balance violation");
         }
 
-        // Deduct amount from balance
         this.balance -= amount;
     }
 

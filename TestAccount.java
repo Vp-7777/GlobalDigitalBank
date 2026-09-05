@@ -1,5 +1,5 @@
 // Global Digital Bank - Training Program
-// Activity 2: Testing the Account Class
+// Activity 2: Testing the Account Class (Updated with Exception Handling)
 
 public class TestAccount {
 
@@ -30,19 +30,21 @@ public class TestAccount {
         
         // Valid deposit of 500.0
         double depositAmount1 = 500.0;
-        if (acc1.deposit(depositAmount1)) {
+        try {
+            acc1.deposit(depositAmount1);
             System.out.println("Depositing ₹" + depositAmount1 + ": SUCCESS");
             System.out.println("New balance: ₹" + acc1.getBalance());
-        } else {
-            System.out.println("Depositing ₹" + depositAmount1 + ": FAILED (Invalid amount)");
+        } catch (Exception e) {
+            System.out.println("Depositing ₹" + depositAmount1 + ": FAILED (" + e.getMessage() + ")");
         }
 
         // Invalid deposit of -100.0 (negative amount)
         double depositAmount2 = -100.0;
-        if (acc1.deposit(depositAmount2)) {
+        try {
+            acc1.deposit(depositAmount2);
             System.out.println("Depositing ₹" + depositAmount2 + ": SUCCESS");
             System.out.println("New balance: ₹" + acc1.getBalance());
-        } else {
+        } catch (Exception e) {
             System.out.println("Depositing ₹" + depositAmount2 + ": FAILED (Invalid amount)");
         }
 
@@ -51,20 +53,22 @@ public class TestAccount {
 
         // Valid withdrawal of 200.0
         double withdrawAmount1 = 200.0;
-        if (acc1.withdraw(withdrawAmount1)) {
+        try {
+            acc1.withdraw(withdrawAmount1);
             System.out.println("Withdrawing ₹" + withdrawAmount1 + ": SUCCESS");
             System.out.println("New balance: ₹" + acc1.getBalance());
-        } else {
-            System.out.println("Withdrawing ₹" + withdrawAmount1 + ": FAILED (Insufficient balance)");
+        } catch (Exception e) {
+            System.out.println("Withdrawing ₹" + withdrawAmount1 + ": FAILED (" + e.getMessage() + ")");
             System.out.println("Current balance: ₹" + acc1.getBalance());
         }
 
         // Insufficient balance withdrawal of 2000.0
         double withdrawAmount2 = 2000.0;
-        if (acc1.withdraw(withdrawAmount2)) {
+        try {
+            acc1.withdraw(withdrawAmount2);
             System.out.println("Withdrawing ₹" + withdrawAmount2 + ": SUCCESS");
             System.out.println("New balance: ₹" + acc1.getBalance());
-        } else {
+        } catch (Exception e) {
             System.out.println("Withdrawing ₹" + withdrawAmount2 + ": FAILED (Insufficient balance)");
             System.out.println("Current balance: ₹" + acc1.getBalance());
         }
