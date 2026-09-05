@@ -23,3 +23,6 @@
 .vscode/
 .idea/
 *.iml
+
+# Faculty Study Guide
+LEARNING_GUIDE.md
