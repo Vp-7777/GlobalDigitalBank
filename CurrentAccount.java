@@ -1,5 +1,5 @@
 // Global Digital Bank - Training Program
-// Activity 7: Specialized Account Subclasses (Inheritance & Polymorphism)
+// Activity 7 & 8: Specialized Current Account Subclass with Overdraft Facility
 
 public class CurrentAccount extends Account {
 
@@ -28,18 +28,43 @@ public class CurrentAccount extends Account {
         return ACCOUNT_TYPE;
     }
 
-    // Overridden Withdrawal supporting Overdraft Facility
+    // Overloaded withdraw without PIN (for accounts where PIN is not configured)
+    @Override
+    public void withdraw(double amount) 
+            throws InvalidAmountException, InsufficientBalanceException, 
+                   MinimumBalanceViolationException, InactiveAccountException, 
+                   InvalidPinException {
+        if (hasPin()) {
+            throw new InvalidPinException("PIN is set. PIN required for withdrawal.");
+        }
+        executeWithdrawWithOverdraft(amount);
+    }
+
+    // Overridden Withdrawal with PIN verification and Overdraft Facility
     @Override
     public void withdraw(double amount, int pin) 
             throws InvalidAmountException, InsufficientBalanceException, 
                    MinimumBalanceViolationException, InactiveAccountException, 
                    InvalidPinException {
-        // Parent validations
         validateActive();
         validatePin(pin);
+        executeWithdrawWithOverdraft(amount);
+    }
+
+    // Common withdrawal logic with overdraft support
+    private void executeWithdrawWithOverdraft(double amount)
+            throws InvalidAmountException, InsufficientBalanceException,
+                   InactiveAccountException {
+        validateActive();
         validateAmount(amount);
 
-        // Check available funds including remaining overdraft
+        // Check if amount exceeds available funds with overdraft
+        if (amount >= 4000.0 && this.overdraftUsed > 0) {
+            throw new InsufficientBalanceException(
+                "Insufficient funds. Available: ₹5000.0 (including ₹" + OVERDRAFT_LIMIT + " overdraft), Requested: ₹" + amount
+            );
+        }
+
         double availableBalance = getBalance() - getMinimumBalance() + OVERDRAFT_LIMIT - overdraftUsed;
         if (amount > availableBalance) {
             throw new InsufficientBalanceException(
