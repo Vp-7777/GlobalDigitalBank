@@ -1,5 +1,6 @@
 // Global Digital Bank - Training Program
 // Activity 6: Testing the Account Class with Exceptions
+// Note: Updated in Activity 7 with Polymorphic Account Factory
 
 public class TestAccountExceptions {
 
@@ -25,7 +26,7 @@ public class TestAccountExceptions {
         System.out.println(">>> Test 1: Valid Account Creation");
         Account acc1 = null;
         try {
-            acc1 = new Account(1001, "John Doe", 25, 1000.0, "Savings");
+            acc1 = Account.create(1001, "John Doe", 25, 1000.0, "Savings");
             System.out.println("SUCCESS: " + formatAccount(acc1));
         } catch (IllegalArgumentException e) {
             System.out.println("EXCEPTION: " + e.getMessage());
@@ -34,7 +35,7 @@ public class TestAccountExceptions {
         // >>> Test 2: Invalid Age (under 18)
         System.out.println("\n>>> Test 2: Invalid Age (under 18)");
         try {
-            new Account(1002, "Kid", 16, 500.0, "Savings");
+            Account.create(1002, "Kid", 16, 500.0, "Savings");
         } catch (IllegalArgumentException e) {
             System.out.println("EXCEPTION: " + e.getMessage());
         }
@@ -42,7 +43,7 @@ public class TestAccountExceptions {
         // >>> Test 3: Invalid Account Type
         System.out.println("\n>>> Test 3: Invalid Account Type");
         try {
-            new Account(1003, "User", 25, 500.0, "Invalid");
+            Account.create(1003, "User", 25, 500.0, "Invalid");
         } catch (IllegalArgumentException e) {
             System.out.println("EXCEPTION: " + e.getMessage());
         }
@@ -51,14 +52,14 @@ public class TestAccountExceptions {
         System.out.println("\n>>> Test 4: Minimum Balance on Creation");
         System.out.println("Creating Savings account with ₹300");
         try {
-            new Account(1004, "Bob", 25, 300.0, "Savings");
+            Account.create(1004, "Bob", 25, 300.0, "Savings");
         } catch (IllegalArgumentException e) {
             System.out.println("EXCEPTION: " + e.getMessage());
         }
 
         // >>> Test 5: Valid Deposit and Withdrawal
         System.out.println("\n>>> Test 5: Valid Deposit and Withdrawal");
-        Account acc5 = new Account(1005, "Alice Brown", 30, 1000.0, "Current");
+        Account acc5 = Account.create(1005, "Alice Brown", 30, 1000.0, "Current");
         System.out.println("Account: " + formatAccount(acc5));
 
         try {
@@ -90,7 +91,7 @@ public class TestAccountExceptions {
 
         // >>> Test 7: Insufficient Balance
         System.out.println("\n>>> Test 7: Insufficient Balance");
-        Account acc6 = new Account(1006, "Charlie Green", 35, 500.0, "Savings");
+        Account acc6 = Account.create(1006, "Charlie Green", 35, 500.0, "Savings");
         acc6.setPin(1234);
         System.out.println("Account: " + formatAccount(acc6));
         System.out.println("Attempting to withdraw ₹1000.0");
@@ -104,7 +105,7 @@ public class TestAccountExceptions {
 
         // >>> Test 8: Minimum Balance Violation
         System.out.println("\n>>> Test 8: Minimum Balance Violation");
-        Account acc7 = new Account(1007, "Diana Prince", 28, 1000.0, "Savings");
+        Account acc7 = Account.create(1007, "Diana Prince", 28, 1000.0, "Savings");
         acc7.setPin(1234);
         System.out.println("Account: " + formatAccount(acc7));
         System.out.println("Attempting to withdraw ₹600.0");
@@ -118,7 +119,7 @@ public class TestAccountExceptions {
 
         // >>> Test 9: Inactive Account Operations
         System.out.println("\n>>> Test 9: Inactive Account Operations");
-        Account acc8 = new Account(1008, "Eve Wilson", 32, 2000.0, "Current");
+        Account acc8 = Account.create(1008, "Eve Wilson", 32, 2000.0, "Current");
         System.out.println("Account: " + formatAccount(acc8));
 
         acc8.closeAccount();
@@ -146,7 +147,7 @@ public class TestAccountExceptions {
 
         // >>> Test 10: PIN Verification
         System.out.println("\n>>> Test 10: PIN Verification");
-        Account acc9 = new Account(1009, "Frank Miller", 40, 1500.0, "Savings");
+        Account acc9 = Account.create(1009, "Frank Miller", 40, 1500.0, "Savings");
         System.out.println("Account: " + formatAccount(acc9));
 
         acc9.setPin(1234);
@@ -170,7 +171,7 @@ public class TestAccountExceptions {
         }
 
         System.out.println("Attempting to withdraw ₹100.0 without PIN set");
-        Account accNoPin = new Account(1010, "No PIN User", 25, 1000.0, "Savings");
+        Account accNoPin = Account.create(1010, "No PIN User", 25, 1000.0, "Savings");
         try {
             accNoPin.withdraw(100.0, 1234);
         } catch (InvalidPinException e) {

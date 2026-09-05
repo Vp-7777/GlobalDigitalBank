@@ -1,56 +1,61 @@
 // Global Digital Bank - Training Program
 // Activity 1: Creating the Account Class (Entity/Model Class)
-// Continuation & Enhancement in Activity 5: Introducing Exceptions in the Account Class
+// Continuation in Activity 5: Introducing Exceptions in the Account Class
+// Continuation in Activity 7: Creating Account Subclasses (Converting to Abstract Class)
 
-public class Account {
+public abstract class Account {
 
     // Constants (Added in Activity 5)
-    public static final double MIN_BALANCE_SAVINGS = 500.0;
-    public static final double MIN_BALANCE_CURRENT = 1000.0;
     public static final int MIN_AGE = 18;
     public static final int MIN_PIN = 1000;
     public static final int MAX_PIN = 9999;
 
-    // Private Fields (Created in Activity 1, Extended in Activity 5)
+    // Private Fields
     private int accountNumber;
     private String name;
     private int age;
-    private double balance;
-    private String accountType;
+    protected double balance; // Protected so specialized subclasses can access/update
     private String status;
-    private Integer pin; // Added in Activity 5 for PIN security
+    private Integer pin;
 
-    // Constructor (Activity 1, enhanced with validation exceptions in Activity 5)
-    public Account(int accountNumber, String name, int age, double initialBalance, String accountType) {
+    // Abstract Methods (Introduced in Activity 7 for Polymorphism)
+    public abstract double getMinimumBalance();
+    public abstract String getAccountType();
+
+    // Constructor (Activity 7: 4 parameters, delegates min balance & type to subclass)
+    public Account(int accountNumber, String name, int age, double initialBalance) {
         // Validate age (must be at least 18)
         if (age < MIN_AGE) {
             throw new IllegalArgumentException("Customer must be at least " + MIN_AGE + " years old. Provided: " + age);
         }
 
-        // Validate account type ("Savings" or "Current")
-        if (!"Savings".equalsIgnoreCase(accountType) && !"Current".equalsIgnoreCase(accountType)) {
-            throw new IllegalArgumentException("Account type must be 'Savings' or 'Current'. Provided: " + accountType);
-        }
-
-        // Standardize account type name
-        this.accountType = "Current".equalsIgnoreCase(accountType) ? "Current" : "Savings";
-
-        // Validate initial deposit against required minimum balance
-        double minBalance = getMinimumBalance();
-        if (initialBalance < minBalance) {
-            throw new IllegalArgumentException(this.accountType + " account requires minimum balance of ₹" + minBalance + ". Provided: ₹" + initialBalance);
-        }
-
-        // Initialize state
+        // Initialize core fields before polymorphic balance validation
         this.accountNumber = accountNumber;
         this.name = name;
         this.age = age;
-        this.balance = initialBalance;
         this.status = "Active";
         this.pin = null;
+        this.balance = initialBalance;
+
+        // Validate minimum balance (delegated to subclass via abstract getMinimumBalance())
+        double minBalance = getMinimumBalance();
+        if (initialBalance < minBalance) {
+            throw new IllegalArgumentException(getAccountType() + " account requires minimum balance of ₹" + minBalance + ". Provided: ₹" + initialBalance);
+        }
     }
 
-    // Deposits money into the account (Enhanced in Activity 5 to throw exceptions)
+    // Factory method for backward-compatible instantiation in earlier test suites
+    public static Account create(int accountNumber, String name, int age, double initialBalance, String accountType) {
+        if ("Savings".equalsIgnoreCase(accountType)) {
+            return new SavingsAccount(accountNumber, name, age, initialBalance);
+        } else if ("Current".equalsIgnoreCase(accountType)) {
+            return new CurrentAccount(accountNumber, name, age, initialBalance);
+        } else {
+            throw new IllegalArgumentException("Account type must be 'Savings' or 'Current'. Provided: " + accountType);
+        }
+    }
+
+    // Deposits money into the account
     public void deposit(double amount) throws InvalidAmountException, InactiveAccountException {
         validateActive();
 
@@ -61,7 +66,7 @@ public class Account {
         this.balance += amount;
     }
 
-    // Overloaded withdrawal without PIN (for backward compatibility with Activity 1 & 2 tests)
+    // Overloaded withdrawal without PIN (for backward compatibility)
     public void withdraw(double amount) 
             throws InvalidAmountException, InsufficientBalanceException, 
                    MinimumBalanceViolationException, InactiveAccountException, 
@@ -72,25 +77,18 @@ public class Account {
         performWithdrawal(amount);
     }
 
-    // Withdraws money with PIN verification (Introduced in Activity 5)
+    // Standard withdrawal with PIN verification
     public void withdraw(double amount, int pin) 
             throws InvalidAmountException, InsufficientBalanceException, 
                    MinimumBalanceViolationException, InactiveAccountException, 
                    InvalidPinException {
         validateActive();
-
-        if (!hasPin()) {
-            throw new InvalidPinException("PIN not set for this account");
-        }
-
-        if (!verifyPin(pin)) {
-            throw new InvalidPinException("Incorrect PIN");
-        }
-
+        validatePin(pin);
+        validateAmount(amount);
         performWithdrawal(amount);
     }
 
-    // Common withdrawal helper handling business rules
+    // Common withdrawal execution helper
     private void performWithdrawal(double amount) 
             throws InvalidAmountException, InsufficientBalanceException, 
                    MinimumBalanceViolationException, InactiveAccountException {
@@ -112,7 +110,33 @@ public class Account {
         this.balance -= amount;
     }
 
-    // Account Status Management (Added in Activity 5)
+    // Protected Validation Helpers for Subclasses
+    protected void validateActive() throws InactiveAccountException {
+        if (!"Active".equals(this.status)) {
+            throw new InactiveAccountException("Account is inactive. Please reopen the account or contact support.");
+        }
+    }
+
+    protected void validatePin(int pin) throws InvalidPinException {
+        if (!hasPin()) {
+            throw new InvalidPinException("PIN not set for this account");
+        }
+        if (!verifyPin(pin)) {
+            throw new InvalidPinException("Incorrect PIN");
+        }
+    }
+
+    protected void validateAmount(double amount) throws InvalidAmountException {
+        if (amount <= 0) {
+            throw new InvalidAmountException("Withdrawal amount must be positive. Provided: ₹" + amount);
+        }
+    }
+
+    protected void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    // Account Status Management
     public void closeAccount() {
         if ("Inactive".equals(this.status)) {
             throw new IllegalStateException("Account #" + this.accountNumber + " is already closed.");
@@ -127,7 +151,7 @@ public class Account {
         this.status = "Active";
     }
 
-    // PIN Management (Added in Activity 5)
+    // PIN Management
     public void setPin(int pin) {
         if (pin < MIN_PIN || pin > MAX_PIN) {
             throw new IllegalArgumentException("PIN must be a 4-digit number between " + MIN_PIN + " and " + MAX_PIN + ". Provided: " + pin);
@@ -143,21 +167,7 @@ public class Account {
         return this.pin != null;
     }
 
-    // Helper Methods
-    public double getMinimumBalance() {
-        if ("Current".equalsIgnoreCase(this.accountType)) {
-            return MIN_BALANCE_CURRENT;
-        }
-        return MIN_BALANCE_SAVINGS;
-    }
-
-    public void validateActive() throws InactiveAccountException {
-        if (!"Active".equals(this.status)) {
-            throw new InactiveAccountException("Account is inactive. Please reopen the account or contact support.");
-        }
-    }
-
-    // Getters (Activity 1)
+    // Getters
     public int getAccountNumber() {
         return accountNumber;
     }
@@ -172,10 +182,6 @@ public class Account {
 
     public double getBalance() {
         return balance;
-    }
-
-    public String getAccountType() {
-        return accountType;
     }
 
     public String getStatus() {

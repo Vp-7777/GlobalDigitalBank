@@ -1,6 +1,6 @@
 // Global Digital Bank - Training Program
 // Activity 2: Testing the Account Class
-// Note: Updated in Activity 5 to demonstrate exception-safe execution using try-catch blocks
+// Note: Updated in Activity 5 (Exceptions) and Activity 7 (Polymorphic Account Factory)
 
 public class TestAccount {
 
@@ -20,9 +20,9 @@ public class TestAccount {
         System.out.println(" GLOBAL DIGITAL BANK - ACCOUNT TEST");
         System.out.println("==================================================");
 
-        // 1. Creating First Account
+        // 1. Creating First Account (Polymorphic creation)
         System.out.println(">>> 1. Creating Account");
-        Account acc1 = new Account(1001, "John Doe", 25, 1000.0, "Savings");
+        Account acc1 = Account.create(1001, "John Doe", 25, 1000.0, "Savings");
         System.out.println("Account created!");
         System.out.println(formatAccount(acc1));
 
@@ -76,7 +76,7 @@ public class TestAccount {
 
         // 4. Creating Another Account
         System.out.println(">>> 4. Creating Another Account");
-        Account acc2 = new Account(1002, "Jane Smith", 30, 2000.0, "Current");
+        Account acc2 = Account.create(1002, "Jane Smith", 30, 2000.0, "Current");
         System.out.println(formatAccount(acc2));
 
         // 5. Display All Accounts
