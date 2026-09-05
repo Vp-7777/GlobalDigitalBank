@@ -1,5 +1,5 @@
 // Global Digital Bank - Training Program
-// Activity 4: Testing the Enhanced Account Class
+// Activity 4: Testing the Enhanced Account Class (Boolean Returns & Business Rules)
 
 public class TestAccountEnhanced {
 

@@ -1,25 +1,27 @@
 // Global Digital Bank - Training Program
-// Activity 5 & 6: Account Class with Exception Handling
+// Activity 1: Creating the Account Class (Entity/Model Class)
+// Continuation & Enhancement in Activity 5: Introducing Exceptions in the Account Class
 
 public class Account {
 
-    // ===== Constants =====
+    // ===== Constants (Added in Activity 5) =====
     public static final double MIN_BALANCE_SAVINGS = 500.0;
     public static final double MIN_BALANCE_CURRENT = 1000.0;
     public static final int MIN_AGE = 18;
     public static final int MIN_PIN = 1000;
     public static final int MAX_PIN = 9999;
 
-    // ===== Private Fields =====
+    // ===== Private Fields (Created in Activity 1, Extended in Activity 5) =====
     private int accountNumber;
     private String name;
     private int age;
     private double balance;
     private String accountType;
     private String status;
-    private Integer pin;
+    private Integer pin; // Added in Activity 5 for PIN security
 
     // ===== Constructor =====
+    // Initialized in Activity 1, updated in Activity 5 to throw IllegalArgumentException instead of self-correcting
     public Account(int accountNumber, String name, int age, double initialBalance, String accountType) {
         // Validate age (must be >= 18)
         if (age < MIN_AGE) {
@@ -51,7 +53,7 @@ public class Account {
 
     // ===== Business Methods =====
 
-    // Deposits money into the account
+    // Deposits money into the account (Updated in Activity 5 to throw exceptions instead of returning boolean)
     public void deposit(double amount) throws InvalidAmountException, InactiveAccountException {
         // Check if account is active
         validateActive();
@@ -65,7 +67,7 @@ public class Account {
         this.balance += amount;
     }
 
-    // Overloaded withdraw without PIN (for accounts where PIN has not been set)
+    // Overloaded withdraw without PIN for backward compatibility with Activity 1 & 2 tests
     public void withdraw(double amount) throws InvalidAmountException, 
                                                InsufficientBalanceException, 
                                                MinimumBalanceViolationException, 
@@ -77,7 +79,7 @@ public class Account {
         performWithdrawal(amount);
     }
 
-    // Withdraws money with PIN verification
+    // Withdraws money with PIN verification (Introduced in Activity 5)
     public void withdraw(double amount, int pin) throws InvalidAmountException, 
                                                         InsufficientBalanceException, 
                                                         MinimumBalanceViolationException, 
@@ -99,7 +101,7 @@ public class Account {
         performWithdrawal(amount);
     }
 
-    // Common withdrawal execution helper
+    // Common withdrawal validation and balance deduction helper
     private void performWithdrawal(double amount) throws InvalidAmountException,
                                                          InsufficientBalanceException,
                                                          MinimumBalanceViolationException,
@@ -122,7 +124,7 @@ public class Account {
         this.balance -= amount;
     }
 
-    // ===== Account Status Management =====
+    // ===== Account Status Management (Added in Activity 5) =====
 
     // Closes the account
     public void closeAccount() {
@@ -140,7 +142,7 @@ public class Account {
         this.status = "Active";
     }
 
-    // ===== PIN Management =====
+    // ===== PIN Management (Added in Activity 5) =====
 
     // Sets a 4-digit PIN
     public void setPin(int pin) {
@@ -177,7 +179,7 @@ public class Account {
         }
     }
 
-    // ===== Getters =====
+    // ===== Getters (Created in Activity 1) =====
     public int getAccountNumber() {
         return accountNumber;
     }

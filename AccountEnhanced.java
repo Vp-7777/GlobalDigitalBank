@@ -1,5 +1,5 @@
 // Global Digital Bank - Training Program
-// Activity 3 & 4: Enhanced Account Class with Validation, Business Rules, and PIN Security
+// Activity 3: Enhancing the Account Class (Validation, Business Rules, and PIN Security)
 
 public class AccountEnhanced {
 
@@ -33,7 +33,7 @@ public class AccountEnhanced {
         return 500.0;
     }
 
-    // Constructor with self-correcting validation rules
+    // Constructor with self-correcting validation rules (Activity 3 Enhancement)
     public AccountEnhanced(int accountNumber, String name, int age, double initialBalance, String accountType) {
         this.accountNumber = accountNumber;
         this.name = name;

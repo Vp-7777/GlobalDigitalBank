@@ -1,5 +1,6 @@
 // Global Digital Bank - Training Program
-// Activity 2: Testing the Account Class (Updated with Exception Handling)
+// Activity 2: Testing the Account Class
+// Note: Updated in Activity 5 to demonstrate exception-safe execution using try-catch blocks
 
 public class TestAccount {
 
