@@ -1,5 +1,5 @@
 // Global Digital Bank - Training Program
-// Activity 5: Account Class with Exception Handling
+// Activity 5 & 6: Account Class with Exception Handling
 
 public class Account {
 
@@ -23,12 +23,12 @@ public class Account {
     public Account(int accountNumber, String name, int age, double initialBalance, String accountType) {
         // Validate age (must be >= 18)
         if (age < MIN_AGE) {
-            throw new IllegalArgumentException("Account holder must be at least " + MIN_AGE + " years old. Provided: " + age);
+            throw new IllegalArgumentException("Customer must be at least " + MIN_AGE + " years old. Provided: " + age);
         }
 
         // Validate account type (must be "Savings" or "Current")
         if (!"Savings".equalsIgnoreCase(accountType) && !"Current".equalsIgnoreCase(accountType)) {
-            throw new IllegalArgumentException("Invalid account type: " + accountType + ". Must be 'Savings' or 'Current'.");
+            throw new IllegalArgumentException("Account type must be 'Savings' or 'Current'. Provided: " + accountType);
         }
 
         // Standardize account type casing
@@ -37,7 +37,7 @@ public class Account {
         // Validate minimum balance based on account type
         double minBalance = getMinimumBalance();
         if (initialBalance < minBalance) {
-            throw new IllegalArgumentException("Initial balance ₹" + initialBalance + " is below minimum required ₹" + minBalance + " for " + this.accountType + " account.");
+            throw new IllegalArgumentException(this.accountType + " account requires minimum balance of ₹" + minBalance + ". Provided: ₹" + initialBalance);
         }
 
         // Initialize fields
@@ -58,7 +58,7 @@ public class Account {
 
         // Check if amount is positive
         if (amount <= 0) {
-            throw new InvalidAmountException("Invalid amount");
+            throw new InvalidAmountException("Deposit amount must be positive. Provided: ₹" + amount);
         }
 
         // Add amount to balance
@@ -88,7 +88,7 @@ public class Account {
 
         // 2. Check if PIN is set
         if (!hasPin()) {
-            throw new InvalidPinException("PIN not set");
+            throw new InvalidPinException("PIN not set for this account");
         }
 
         // 3. Verify PIN
@@ -107,16 +107,16 @@ public class Account {
         validateActive();
 
         if (amount <= 0) {
-            throw new InvalidAmountException("Invalid amount");
+            throw new InvalidAmountException("Withdrawal amount must be positive. Provided: ₹" + amount);
         }
 
         if (amount > this.balance) {
-            throw new InsufficientBalanceException("Insufficient balance");
+            throw new InsufficientBalanceException("Insufficient balance. Available: ₹" + this.balance + ", Requested: ₹" + amount);
         }
 
         double minBalance = getMinimumBalance();
         if (this.balance - amount < minBalance) {
-            throw new MinimumBalanceViolationException("Minimum balance violation");
+            throw new MinimumBalanceViolationException("Cannot withdraw. Minimum balance of ₹" + minBalance + " required. Available after withdrawal: ₹" + (this.balance - amount));
         }
 
         this.balance -= amount;
@@ -127,7 +127,7 @@ public class Account {
     // Closes the account
     public void closeAccount() {
         if ("Inactive".equals(this.status)) {
-            throw new IllegalStateException("Account #" + this.accountNumber + " is already closed/inactive.");
+            throw new IllegalStateException("Account #" + this.accountNumber + " is already closed.");
         }
         this.status = "Inactive";
     }
@@ -173,7 +173,7 @@ public class Account {
     // Validates that the account is active
     public void validateActive() throws InactiveAccountException {
         if (!"Active".equals(this.status)) {
-            throw new InactiveAccountException("Operation failed: Account #" + this.accountNumber + " is inactive.");
+            throw new InactiveAccountException("Account is inactive. Please reopen the account or contact support.");
         }
     }
 
